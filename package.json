@@ -1,0 +1,21 @@
+{
+  "name": "draft-politecnica",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Simulador de picks y bans para el equipo de LoL de la Facultad Politécnica (UNA)",
+  "scripts": {
+    "postinstall": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -k -n api,web -c yellow,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "typecheck": "npm run typecheck --prefix server && npm run typecheck --prefix client",
+    "test": "npm test --prefix client",
+    "db:generate": "npm run db:generate --prefix server",
+    "db:migrate": "npm run db:migrate --prefix server",
+    "db:seed": "npm run db:seed --prefix server",
+    "champions:sync": "npm run champions:sync --prefix server",
+    "champions:offline": "npm run champions:sync --prefix server -- --images"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

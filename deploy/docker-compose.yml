@@ -1,0 +1,28 @@
+services:
+  app:
+    image: ${IMAGE}
+    restart: unless-stopped
+    init: true
+    environment:
+      AUTH_USER: ${AUTH_USER:-politecnica}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+    volumes:
+      - ./data:/data
+
+  # HTTPS automático con Let's Encrypt (sirve con un dominio propio o con <ip>.sslip.io)
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:

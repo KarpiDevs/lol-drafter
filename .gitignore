@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/draft.db*
+data/champions/
+.DS_Store
+deploy/.env
+deploy/data/
+deploy/backups/
