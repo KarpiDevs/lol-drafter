@@ -66,6 +66,8 @@ async function http<T>(method: string, url: string, body?: unknown): Promise<T> 
     headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
+  // Sesión vencida o cerrada: recargar muestra la pantalla de login
+  if (res.status === 401) window.location.reload();
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error ?? `Error ${res.status}`);

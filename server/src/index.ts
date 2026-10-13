@@ -1,10 +1,10 @@
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
-import { basicAuth } from 'hono/basic-auth';
 import { logger } from 'hono/logger';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { installAuth } from './auth';
 import { db, ROOT_DIR, runMigrations, schema } from './db';
 import { asc } from 'drizzle-orm';
 import { cacheImage, championImageUrl, ddragonVersion, IMG_DIR, syncChampions } from './ddragon';
@@ -113,9 +113,11 @@ app.delete('/drafts/:id', (c) => {
 const root = new Hono();
 
 const password = process.env.AUTH_PASSWORD;
-if (password) {
-  root.use(basicAuth({ username: process.env.AUTH_USER ?? 'politecnica', password }));
+if (!password && process.env.NODE_ENV === 'production') {
+  console.error('Falta AUTH_PASSWORD: en producción la app no arranca sin contraseña.');
+  process.exit(1);
 }
+if (password) installAuth(root, process.env.AUTH_USER ?? 'politecnica', password);
 
 root.route('/', app);
 

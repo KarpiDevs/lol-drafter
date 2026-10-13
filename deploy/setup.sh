@@ -5,6 +5,10 @@ set -euo pipefail
 cd "$(dirname "$0")"
 DIR="$(pwd)"
 
+if ! command -v cron >/dev/null; then
+  sudo apt-get update -qq && sudo apt-get install -y -qq cron
+fi
+
 if ! command -v docker >/dev/null; then
   echo "==> Instalando Docker"
   curl -fsSL https://get.docker.com | sudo sh
@@ -27,7 +31,10 @@ if [ ! -f .env ]; then
   read -rp "Dominio [${IP:+$IP.sslip.io}]: " DOMAIN
   DOMAIN=${DOMAIN:-$IP.sslip.io}
   read -rp "Usuario [politecnica]: " AUTH_USER
-  read -rsp "Contraseña para entrar a la app: " AUTH_PASSWORD; echo
+  AUTH_PASSWORD=""
+  while [ -z "$AUTH_PASSWORD" ]; do
+    read -rsp "Contraseña para entrar a la app (no puede quedar vacía): " AUTH_PASSWORD; echo
+  done
   cat > .env <<ENV
 IMAGE=$IMAGE
 DOMAIN=$DOMAIN
